@@ -1,0 +1,346 @@
+Computer Science 4 - Project 1
+
+Configuration Puzzles
+
+copyright RIT 2002-2013
+$Id: writeup.xml,v 1.2 2011/03/16 15:09:47 cs4 Exp cs4 $
+
+Due Dates:
+
+Part 1 is due on 04/02/2013.
+
+Part 2 is due on 04/16/2013.
+
+Part 3 is due on 04/30/2013 .
+
+Part 4 is due on 05/07/2013.
+
+Goal
+
+1. Design
+
+You will improve your design skills while learning many new design techniques and styles.
+
+2. C++ Programming
+
+You will learn what it takes to develop a larger program in the C++ language.
+
+3. C++ Survival
+
+Some of the techniques you learned in more standard object-oriented languages may not apply here. In addition, C++ has some unique features that you may be able to exploit. This project should help expose you to these issues and show you how to make choices you can live with.
+
+Overview
+
+Abstraction as a Means of Extensible Design
+
+Below you will read about some specific problems you are to solve. We will also show you how these problems fit into a more general analysis pattern. If you learn this general analysis pattern, you can design a solution that implements this more abstract model. That will allow you to 'plug in' new concrete puzzle problems with less effort.
+
+There are four problems for you to solve. The background section describes the common characteristics of these problems.
+
+Fixing the Time on Your Clock
+
+Your clock has gone dead because you forgot to wind it or replace the battery, or you had a power outage. This clock has hands, so you must turn them to adjust the time. Which way, and how far, should you turn the hands to fix the time the most quickly?
+
+You've probably guessed that this will be the easy one of the bunch. In fact, we'll trivialize it even further. The clock only has an hour hand, so the question becomes how many whole hours backwards or forwards the hour hand must be moved. Then we will "complicate" it a bit by turning it into a general modulo-n counting problem, by saying that the clock displays n hours on its face.
+
+Towers of Hanoi
+
+(This puzzle was brought out in 1883 by M. Claus according to Lucas.)
+
+Originally, the puzzle consisted of three pegs and eight circular disks, each with a hole in the middle to enable the disk to be placed on any of the three pegs. The disks are of different sizes and the rule is that a disk may not be placed on top of a disk of smaller size. The puzzle starts with all of the disks on one of the pegs like a pyramid, largest disk on the bottom and successively smaller disks on top. The puzzle is to move all of the disks to another peg by moving one disk at a time and at no time placing a larger disk on top of a smaller disk.
+
+We will generalize this puzzle by allowing any number of disks and any number of pegs. The puzzle will be to move the stack of disks from the first peg to the last in the smallest number of moves (if this is possible).
+
+In "Mathematical Recreations & Essays" by W. W. Rouse Ball, he quotes De Parville ("La Nature", Paris, 1884, part I, pp. 285-286) with the following origin of the puzzle:
+
+"In the great temple at Benares, beneath the dome which marks the center of the world, rests a brass plate in which are fixed three diamond needles, each a cubit high and as thick as the body of a bee. On one of these needles, at the creation, God placed sixty-four discs of pure gold, the largest resting on the brass plate, and the others getting smaller and smaller up to the top one. This is the Tower of Bramah. Day and night unceasingly the priests transfer the discs from one diamond needle to another according to the fixed and immutable laws of Bramah, which require that the priest on duty must not move more than one disc at a time and that he must place this disk on a needle so that there is no smaller disc below it. When the sixty-four discs shall have been thus transferred from the needle on which at creation God placed them to one of the other needles, tower, temple, and Brahmins alike will crumble into dust, and with a thunderclap the world will vanish."
+
+The Parking Lot Jam
+
+Imagine you have been asked to get a car out of the parking lot, but it is blocked by other cars. Your goal is to move the other cars (you have all the keys!) in such ways as to eventually get the desired car poised at the exit from the parking lot.
+
+The cars can only move forward and backward - they cannot turn or move sideways.
+
+You may want to think about a similar puzzle many of you may have tried, where you try to rearrange the square pieces of a picture to get them laid out in the proper order.
+
+The specifics of each problem will be given in the detailed submission instructions for parts 1, 2, and 3. You will work on puzzle part 1 by yourself, and then you will work on puzzles 2 and 3 with another student teammate.
+
+After you and your team have solved these puzzles you will have to solve one additional puzzle on your own. The specifics of this problem are given in the detailed submission instructions for part 4.
+
+Background
+
+A Single Abstraction for these Problems
+
+The problems described in the overview section belong to a class of problems that can be characterized as follows:
+
+There is some kind of world that can be in one of many configurations. Actions cause the configuration of the world to change in one small, incremental way.
+
+The set of all possible configurations is not known ahead of time; they must be computed by applying actions and seeing where they take us.
+
+We are presented with an initial configuration and asked to bring the system to an acceptable goal configuration.
+
+The acceptability of a configuration as a goal configuration is testable, and there may be more than just a single such goal configuration.
+
+The solution is then a sequence of actions that propel the world from the initial configuration to one of the goal configurations. It is enough when presenting a solution to a puzzle to list a sequence of configurations that lead to a goal configuration.
+
+Mapping the Abstraction
+
+Let's see how the parking jam problem maps to this abstraction.
+
+The world is the parking lot. The current configuration of the world is the size, position, and orientation of each vehicle in the lot. An action consists of moving one vehicle to a new spot in a legal way (no collisions).
+
+The initial configuration is just the initial setup of all the vehicles. The test for an acceptable configuration would be to see whether the needed vehicle is situated at the exit, ready to drive out.
+
+We leave it as an exercise to the student to determine the mappings to the other two problems.
+The Algorithm
+
+The interesting thing about these problems is that we do not have to think about the concrete problem instance in order to describe an algorithm to solve it! Read and make sure you understand the algorithm below:
+
+
+    Create an initially empty queue of configurations.
+    Insert the initial configuration into the queue.
+    While
+      the queue is not empty and
+      the first configuration in the queue does not meet the goal,
+    loop:
+        Remove the first configuration from the queue and call it cfg.
+        For each move applicable to cfg, loop:
+            Make the move and enqueue the resulting
+            configuration if it has not already been seen.
+        end-loop.
+    end-loop.
+    The acceptable configuration is now at the head of the queue;
+    but if the queue is empty, there is no solution to the problem.
+        
+Did you recognize a pattern in the way the algorithm organizes and traverses its search space? It is a breadth-first search of a tree, where the nodes of the tree are discovered and attached as you go. This guarantees that the first goal configuration that is detected will be a minimum distance from the starting point.
+
+This algorithm could be more efficient. As written, it finds a goal configuration, but keeps looping until that configuration gets to the head of the queue. Feel free to improve the algorithm.
+
+Notice some important things about the above algorithm:
+
+No specific concrete problem is ever mentioned; the process is completely general.
+
+The algorithm is incomplete because it does not finish by telling you the sequence of actions that get you to an acceptable configuration. Finding a way to report the sequence of steps that to a goal is an exercise for the student.
+
+We do not say how to determine if a configuration "has not already been seen". Your design and implementation will have to resolve how to decide that question also.
+
+What To Do
+
+The activities in this project will have you design a framework that is easily adapted to all the problems of the classification described above. You will then implement and test all three of the problems using that design.
+
+The general process you should follow goes something like this:
+
+
+    Develop the initial framework design in the abstract. 
+    Submit a design sketch to your instructor. 
+    Write the code for the abstract framework. 
+    For each problem for which you must implement a solution:
+        Code and test the specific problem classes.
+        If the previous step forced a modification of your design,
+            Modify the code for the design as needed to make it work.
+            Modify the code for the previous problems as needed.
+    Submit the code for your latest design and all problems solved so far.
+    
+Shared Programming Responsibility
+
+Because this is the only project you are doing in this course, and it is partly a team project, there is a possibility that we will not be able to accurately assess your programming abilities if your teammates do most of the programming. Therefore, each team member must be responsible for an equal portion of the code written in the activities 2 and 3.
+
+In the file header comments, the name of the principal author must be listed first in each code file. The principal author of a segment of code must be able to explain it orally if asked by their instructor. Activity 1 is solely an individual submission; Activity 4 is an individual submission based on work the team has done during submissions 2 and 3, plus individual work to complete puzzle 4.
+
+Part 1
+
+Part 1 is due on 04/02/2013.
+
+In this activity you will design a framework capable of solving any puzzle of a specific type. As a validation test, use the framework to solve the first simple puzzle. The first activity primarily concerns the design of the framework. The term framework means a set of classes that enable implementation of solutions to certain problems. However, the framework by itself is not a complete program. You will work with abstract notions such as configuration, goal, and find-next-configuration. The problem solver should be able to solve any problem that conforms to an interface that you develop in your design. Think carefully about this interface, as you will also have to write classes that conform to it to solve the four problems.
+
+Your design document is a text file that contains a description of the framework that will solve puzzles. It should include a description of the classes and the public methods that the client uses to solve puzzles. This description should explain how the solver will solve puzzles.
+
+It is important to understand that the solver must be capable of solving any puzzle and must contain all of the puzzle-solving machinery. An individual puzzle must not contain any puzzle-solving machinery; a puzzle may contain only the methods implementing the rules for a particular puzzle. You do not need to design a general puzzle rule mechanism because each puzzle instance can explicitly code the possible successor states to any (legal) puzzle configuration.
+
+The design document should also explain the flow of control and the sequence of steps that the solver would take when solving a simple puzzle. You should explain how the client puzzle uses the interface you have designed and the steps that are taken to solve a specific puzzle. For example, the puzzle problem can be to set the clock to 3 when it now reads 2. The design document explains how this will happen within the general solver framework.
+
+When you design the generic configuration class, make sure you include some type of a display function that will print a textual representation of the configuration to standard output. This will be of great help while you are debugging your code. The puzzle solver algorithm can be enhanced by a call to the display function inside the loop. Of course, the implementations of display() will appear only in the code for specific puzzles.
+
+This activity will also perform the first validation of your design. You will write the code for your design. Then you will add code for the set-the-clock problem, put the two together, and see how they work. It is important to note that you are expected to be using a framework that is equally applicable to the other problems. Clearly, there are far easier solutions to this problem than the one we are having you build! This first puzzle is designed to test your framework design.
+
+You will have to think about exactly how you will realize your design within the constraints of the C++ language. Although you are free to make your own decisions, some suggested approaches are shown at choices.html that satisfy the requirement of a framework that adapts well to different "configuration/puzzle" problems. All of the choices given can be made to work. As a hint, students who choose to represent configurations as a vector of ints generally have an easier time.
+
+Getting back to the clock problem, it requires three integers as input:
+
+number of hours on dial
+
+current clock time
+
+true time
+
+These integers are to be provided on the command line in the order shown above. Remember that in C++ command line arguments are strings (arrays of chars) and must be converted to ints before they can be used in your program. You may use std::atoi(argv[i])to convert a command line argument to an integer (though this does not handle certain types of invalid data). If you get the wrong number of arguments, or if the times are out of bounds with respect to the legal hours on the dial, you must report an error on standard error and quit.
+The main function must be defined in a file named clock.cpp, which means the program will be called clock. As submitted, the program must print the solution by listing the sequence of configurations needed to reach the chosen goal configuration from the starting configuration.
+
+The file name is case sensitive. Note also that there is a program on some systems named clock. If you use ./clock to invoke your program, it will work.
+
+Your solution to this problem (and all problems) must print out the step number for each step in your solution.
+
+You must also submit a file named readme containing your design and other information about your program. The readme file is part of every submission for this project. If you modify the design in the future, which you can do at any time without penalty, you must submit an explanation of changes in the readme file.
+
+How To Submit
+
+You must submit all the .cpp and .h files required to build the clock program. It must be possible to compile the clock program by executing gmakemake and then simply make. You must also submit your design document, and that file must also be named readme. If you have graphics that describe your design, add the files to the end of the try statement.
+
+Acceptable graphics files are .pdf, .gif, and .jpg. If you need to use another format, see your instructor.
+
+
+            try cs4-grd project1-1 clock.cpp  other-needed-code-files readme
+        
+Part 2
+
+Part 2 is due on 04/16/2013.
+
+The purpose of this activity is to implement the solution for a problem that requires a slightly more involved configuration design. Write the code for the Hanoi problem, plug it into your framework, and make it work.
+
+The program takes command line arguments specifying the initial state of the problem. The first command line argument is an integer representing the number of pegs where disks may be placed. The second command line argument give the number of disks that are initially on the leftmost peg. For example, the command
+
+
+    hanoi 4 8
+            
+would specify four pegs with eight disks on it. The problem would be to move all of the eight disks from the leftmost or first peg to the rightmost or fourth peg. Note that a problem with one or two pegs or one disk is legal.
+
+The program is to be called hanoi, which means the main function should be defined in a file named hanoi.cpp. As submitted, the program must print out the solution for the given disk moving problem or give a report that no solution is possible.
+
+If you have modified the design, you must submit an explanation of changes in the readme file.
+
+Configuration Design Suggestions
+
+The world, although more complicated than the clock, is still fairly simple. The configuration basically consists of the location of each disk. There must also be a place where the number of disks and number of pegs is stored. Since these values never change however, they do not need to be included in each configuration.
+
+How To Submit
+
+You must submit all the .cpp and .h files required to build the hanoi program and the clock program. It must be possible to compile both programs by executing gmakemake and then simply make. Your design model must also be resubmitted, augmented with the classes for the hanoi problem. If your underlying design changed, include the changes in the readme file mentioned above. ( If you had to change your design, then you probably need to update the clock program so that it continues to work. )
+
+
+try cs4-grd project1-2 readme clock.cpp hanoi.cpp other-needed-code-files
+                
+Part 3
+
+Part 3 is due on 04/30/2013 .
+
+The purpose of this activity is to implement the solution for a problem that at least appears very complex to humans. We hope that you will be surprised how easily your framework discovers a solution to this problem. Write the code for the parking jam problem, plug it into your framework, and see how it works.
+
+Input
+
+Your program will need to be told the initial configuration of the puzzle. The program will be called jam and will take two arguments:
+
+The name of the input file to read for the initial configuration data. If this name is "-" then the initial configuration data is read from the standard input.
+
+The name of the output file where the solution is to be written. If this name is "-" then the solution is written to the standard output.
+
+If you get the wrong number of arguments or have difficulty opening, reading, or writing any files, you should report an error on standard error and quit.
+First, all locations are in two dimensions and indicate a square of the parking lot. Consider the x (horizontal) dimension to always be given first, followed by the y (vertical). (If you are thinking of 'row' and 'column', then it is the column that comes first.)
+
+The (0,0) location is in the standard place for computer graphics: upper left hand corner. The x increases to the right, and y increases downward. Consider this as you decide on how you will print the configurations.
+
+The first line will contain the dimensions of the parking lot, the number of squares horizontally followed by the number of squares vertically. (The exit will always be on the right (maximum x) side of the lot.) The second line will contain the number of cars parked in the lot. The third through last lines will give the locations of the vehicles: two pairs of coordinates for the two squares at each end of the vehicle. All vehicles will be one square in width so either the x or y coordinate of the pair of coordinates will be the same. Vehicles will always be horizontal or vertical. There will be no square (1x1) vehicles, so the orientation will always be clear from the location information.
+
+The final vehicle in the file is the one that must be moved to the exit which is at the right-hand side of the puzzle.
+
+You are responsible for detecting any irregularities in the input and exiting the program with a message to standard error. (If there are too many or too few numbers on a line, but it is compensated for in the rest of the input, we do not require that you detect this error. In other words, your input reader does not have to be aware that new lines are a different kind of white space.)
+
+You may assume that there are never more than 25 vehicles on the lot. That is, if there are more than 25, treat it like an input error. We did this to facilitate printing.
+
+A sample input file that shows a rather easy version of this puzzle can be found at jam1.in. It is an example that is easily solved by hand. Be sure and use it as an early test case. Here is what it looks like:
+
+
+A Graphical Representation of jam1.in
+
+A more complicated input file that shows a puzzle can be hard for humans to solve is found at jam3.in. This puzzle can be used as a test case after you have your code debugged. Here is what it looks like:
+
+
+A Graphical Representation of jam3.in
+
+Be sure that you check your code with puzzles that have no solution and puzzles that are solved by the initial configuration.
+
+Configuration Design Suggestions
+
+The world is now more complicated. You may recall that one of the framework approaches in choices.html was to represent the configurations as a vector of integers. Even if you choose another design, you can still put a vector of integers into your configuration class. For this puzzle, a 2D matrix might be easier to work with. Think about indexing a single vector with an accessing function to represent a 2-d matrix with a 1-d vector. You could use the character codes as the integers in your vector. You could then cast the integers to char for printing.
+
+Other possibilities include storing the data much as it is in the input. You could also make a list of vehicles where each one goes so far as to precompute where, if anywhere, it might be able to move.
+
+Submission Details
+
+The program is to be called jam, which means the main function should be defined in a file named jam.cpp. As submitted, the program must print out the solution by listing the sequence of configurations needed to reach the chosen goal configuration from the starting configuration. An action consists of moving one car one space.
+
+Note that there is a possibility that no solution exists. If that is the case for a particular input, the program should print, "no solution exists" on the output (file or standard out), and then exit.
+
+If you have modified the design, you must submit an explanation of changes in a file named readme.
+
+How To Submit
+
+You must submit all the .cpp and .h files required to build the jam and hanoi and clock programs. It must be possible to compile all three programs by executing gmakemake and then simply make. Your design model must also be resubmitted, augmented with the classes for the parking jam problem. If your underlying design changed, include the readme file mentioned above. (If you had to change your design, then you probably need to update the other two programs so that they continue to work.)
+
+
+    try cs4-grd project1-3 clock.cpp hanoi.cpp jam.cpp \
+		readme other-needed-code-files
+                
+Part 4
+
+Part 4 is due on 05/07/2013.
+
+This activity is to be done individually. You may use all of the files that you generated with your team but you may not share any code you write for this particular activity with anyone. You may use the same framework you developed for the previous submission.
+
+You will need to copy the files from the team account to your personal account before working on this submission. In your own account, you will write the code necessary to develop the last activity.
+
+Complete details of the last activity will be given in lastActivity.html at a later date.
+
+You will also submit a team member evaluation form. Only a textual evaluation form is submitted. It is available as team-evaluation in the web directory for this project.
+
+DO NOT SUBMIT PART 4 FROM YOUR TEAM ACCOUNT.
+
+How To Submit
+
+From your own account, you will submit files for all previous activities, a final readme file, and your team evaluation.
+
+Describe and explain what changes you made from your team's design in your final readme file. The readme-text-guide.txt describes the necessary content of the readme.
+
+Below is the pattern for the try submission; the actual try command details will appear in lastActivity.html.
+
+
+    try cs4-grd project1-4  readme \
+                'ACT1.*' 'ACT2.*' 'ACT3.*' 'ACT4.*'  \
+                team-evaluation other-needed-code-files
+                
+Notes: The try arguments must all appear on a single line. The 'ACT?.*' patterns represent all the required file names for each of the project's activities.
+
+Grade Computation
+
+Grade Breakdown:
+
+Code for abstract framework, plus the clock setting problem: 25 points (submitted)
+Code for abstract framework, plus the clock and hanoi problem: 25 points (submitted)
+Code for abstract framework, plus the clock and hanoi and jam problem: 25 points (submitted)
+Code for abstract framework, plus the clock and hanoi and jam and PART4: 25 points (submitted)
+Change History
+
+     
+$Log: writeup.xml,v $
+Revision 1.2  2011/03/16 15:09:47  cs4
+updated for 103
+
+Revision 1.1  2008/05/12 12:23:10  cs4
+Initial revision
+
+Revision 1.22  2008/05/08 20:24:19  cs4
+added word ladder - sps
+
+Revision 1.21  2008/04/15 14:41:20  cs4
+changed part 2 due date
+
+Revision 1.20  2008/03/24 18:22:09  cs4
+*** empty log message ***
+
+Revision 1.19  2008/03/24 18:16:02  cs4
+*** empty log message ***
+
+Revision 1.18  2008/03/18 00:43:48  cs4
+cleaned up change history
+
+Revision 1.17  2008/03/14 13:25:55  cs4
+20073 initial

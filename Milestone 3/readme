@@ -1,0 +1,19 @@
+CS4 Project - Milestone 3 Readme
+Parking lot puzzle 
+Authors: Aditya Jagtiani, Ramnath Ananthraman
+Group: p334-70d
+
+The second milestone adds the following new files: river.cpp, river_config.h and river_config.cpp. 
+The solver is pretty much the same, except for a few minor changes. 
+
+The main function resides in river.cpp. As per the milestone 1 feedback, we have included string streams that prevent almost all invalid inputs. We have also added a few problem specific error checking mechanisms. 
+The various functions and data members have been declared in river_config.h. We have included const correctness this time and used sensible variable and data member names! 
+These functions are implemented in river_config.cpp. We have included special cases when the number of professors is 0 on either side and included step numbers this time. (Had forgotten to do so in the first milestone) 
+As for the Solver.h file, we have resolved the differences between signed and unsigned variables. 
+
+The 3rd milestone has the following files: Jam_config.h, Jam_config.cpp, jam.cpp. the solver remains the same from the previous milestone. 
+Since this phase requires us to read and write to a file, we have included 
+code to handle all 4 possibilities - file to file, console to file, file to console and console - console. The required methods and functions have been defined in Jam_config.h and implemented in Jam_config.cpp. The conditions are quite intricate and required intense dry-runs or paper executions to perfect. We have also eliminate various compilation warnings. 
+We have also handles conditions where 2 cars collide, their coordinates are out of scope and many more file reading errors. 
+
+PS: Please enlarge terminal to get a proper view of the Milestone 2 output! 
